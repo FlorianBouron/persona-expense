@@ -135,12 +135,8 @@ class _MyHomePageState extends State<MyHomePage> {
     ];
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final mediaQuery = MediaQuery.of(context);
-    final isLandscape = mediaQuery.orientation == Orientation.landscape;
-    final String titleApp = 'Personal Expense';
-    final PreferredSizeWidget appBar = Platform.isIOS
+  Widget _buildAppBar(titleApp) {
+    return Platform.isIOS
         ? CupertinoNavigationBar(
             middle: Text(
               titleApp,
@@ -166,6 +162,33 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ],
           );
+  }
+
+  Widget _buildiOS(Widget pageBody, Widget appBar) {
+    return CupertinoPageScaffold(
+      child: pageBody,
+      navigationBar: appBar,
+    );
+  }
+
+  Widget _buildAndroid(Widget pageBody, Widget appBar) {
+    return Scaffold(
+      appBar: appBar,
+      body: pageBody,
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () => _startAddNewTransaction(context),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final isLandscape = mediaQuery.orientation == Orientation.landscape;
+    final String titleApp = 'Personal Expense';
+    final PreferredSizeWidget appBar = _buildAppBar(titleApp);
     final screenRatio = mediaQuery.size.height -
         appBar.preferredSize.height -
         mediaQuery.padding.top;
@@ -187,21 +210,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
     return Platform.isIOS
-        ? CupertinoPageScaffold(
-            child: pageBody,
-            navigationBar: appBar,
-          )
-        : Scaffold(
-            appBar: appBar,
-            body: pageBody,
-            floatingActionButton: Platform.isIOS
-                ? null
-                : FloatingActionButton(
-                    child: const Icon(Icons.add),
-                    onPressed: () => _startAddNewTransaction(context),
-                  ),
-            floatingActionButtonLocation:
-                FloatingActionButtonLocation.centerFloat,
-          );
+        ? _buildiOS(pageBody, appBar)
+        : _buildAndroid(pageBody, appBar);
   }
 }
